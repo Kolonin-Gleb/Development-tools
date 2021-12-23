@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  site:
+    container_name: 'site'
+    build: network/.
+    networks:
+      shop_net:
+        ipv4_address: 10.10.10.2
+    ports:
+      - 80:80
+    environment:
+      - HOST=0.0.0.0
+      - PORT=80
+      - DB_HOST=10.10.10.3
+      - DB_PASSWORD=password
+      - DB_USER=postgres
+      - DATABASE=postgres
+      - DB_PORT=5432
+
+  database:
+    container_name: 'database'
+    image: postgres:10-alpine
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    networks:
+      shop_net:
+        ipv4_address: 10.10.10.3
+
+networks:
+  shop_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24
+          gateway: 10.10.10.1
